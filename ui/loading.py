@@ -19,5 +19,5 @@ class Loading(Toplevel):
             self, orient=HORIZONTAL, length=200, mode='indeterminate')
         self.progress.pack()
 
-    def __null():
+    def __null(*args):
         return
