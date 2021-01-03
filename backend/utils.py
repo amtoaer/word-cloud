@@ -4,6 +4,7 @@ import requests
 from wordcloud import WordCloud
 from jieba import lcut, setLogLevel
 from bs4 import BeautifulSoup
+from PIL import Image
 
 
 def request(URLs: tuple) -> str:
@@ -21,6 +22,8 @@ def request(URLs: tuple) -> str:
                     text)
                 if encodings:
                     encoding = encodings[0]
+                    if encoding == 'GB2312':
+                        encoding = 'GB18030'
                     text = resp.content.decode(encoding=encoding)
             soup = BeautifulSoup(text, 'html.parser')
             for hyperlink in soup.find_all('a'):
@@ -28,14 +31,17 @@ def request(URLs: tuple) -> str:
                     content_all += hyperlink.string
                 except:
                     continue
-        except:
-            print('{}请求失败'.format(URL))
+        except Exception as e:
+            print('{}请求失败，错误为：{}'.format(URL, e))
     return content_all.replace('\r', '').replace('\n', '').replace('\u3000', '')
 
 
 def generate_image_and_top10(content: str) -> tuple:
     setLogLevel(logging.CRITICAL)
     word_list = [item for item in lcut(content) if len(item) > 1]
+    if len(word_list) == 0:
+        print('分词失败')
+        return (Image.open('./img/error.png'), tuple())
     word_count = collections.Counter(word_list)
     top_10 = word_count.most_common(10)
     word_cloud = WordCloud(
