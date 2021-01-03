@@ -1,0 +1,4 @@
+jieba
+beautifulsoup4
+requests
+wordcloud
